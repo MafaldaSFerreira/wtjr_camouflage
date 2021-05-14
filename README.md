@@ -1,4 +1,4 @@
-# wtjr_winter_camouflage_evolution
+# The evolution of winter camouflage in white-tailed jackrabbits
 
 This github contains custom code that was used to study the evolution of seasonal camouflage in white-tailed jackrabbits. Along with the custom code, I provide context code for upstream and downstream analyses so that the code can be efficiently and effectively used.
 
@@ -18,4 +18,4 @@ This github contains custom code that was used to study the evolution of seasona
 2. [Analyses of genotype data](analyses_of_genotype_data/README.md)
 
 ### Assembly of the white-tailed jackrabbit reference genome with 10X linked read data
-1. [Genome assembly and annotation](genome_assembly_and_related_analysis/README.md)
+1. [Genome assembly and annotation](genome_assembly_and_related_analyses/README.md)
