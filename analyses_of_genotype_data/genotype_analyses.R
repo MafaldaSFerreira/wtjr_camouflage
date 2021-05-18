@@ -72,7 +72,7 @@ for(i in 1:length(names(seq_split_list))){
 out_cast <- dcast(data=do.call(rbind, out), SAMPLE_NAME+WELL~MARKER, value.var="GENOTYPE")
 
 # Read the PC1 loading of spectrophometry analysis (N=59)
-pheno<-read.table("phenotype_PC1_loading_sec_data.txt",header=T)
+pheno<-read.table("phenotype_PC1_loading_spec_data.txt",header=T)
 
 # We use the PC1 and PC2 of the PCA analysis with 61 individuals to correct for population structure.
 structure<-read.csv("PC1_PC2_minmaf0.05_61i.txt",header=F,sep="\t")
@@ -147,3 +147,5 @@ as.numeric(top_SNPs$LTW_8_79701598)->top_SNPs$LTW_8_79701598
 
 lm(top_SNPs$Spec1~ + top_SNPs$LTW_4_5424640 + top_SNPs$LTW_8_79701598 + top_SNPs$LTW_2_36361155 + top_SNPs$PC1 + top_SNPs$PC2, data=top_SNPs)->fit
 
+summary(fit)
+summary(fit)$coefficients
