@@ -56,3 +56,15 @@ liftoff -t ../DMNS18807_06042020_pseudohap2.1.fasta -r Oryctolagus_cuniculus.Ory
 ```
 
 The output gff file can be found at https://figshare.com/s/0a2dce1d3a6cf15d0e3d.
+
+### Submitting genome to GenBank
+
+Here I detail certain filtering steps I had to undergo so that I could submit the genome to GenBank on NCBI. Therefore, the submitted genome is not the one used for the original analysis.
+
+The submission portal reported the occorrence of sequences that were strings of Ns. I removed these using [BBmap](https://sourceforge.net/projects/bbmap/) `filterbyname.pl` script.
+
+```
+filterbyname.sh in=../DMNS18807_06042020_pseudohap2.1.fasta out=DMNS18807_06042020_pseudohap2.1.noNs.fasta names=2156,2069,2125,2209,2155,1989,1994,2123,1987,2208,2092,1986,2119,2083,2074,2091,2205,1990,2115,2154,2072,2081,2118,2106,1991,2124,2164,320539,2114,2107,2097,1985,2116,2153,359326,2122,1995,321491,2071,366560,1992,2076,1997,1993,2084,1988,2085,2105,2136,2082,2089
+
+filterbyname.sh in=../DMNS18807_06042020_pseudohap2.2.fasta out=DMNS18807_06042020_pseudohap2.2.noNs.fasta names=2156,2069,2125,2209,2155,1989,1994,2123,1987,2208,2092,1986,2119,2083,2074,2091,2205,1990,2115,2154,2072,2081,2118,2106,1991,2124,2164,320539,2114,2107,2097,1985,2116,2153,359326,2122,1995,321491,2071,366560,1992,2076,1997,1993,2084,1988,2085,2105,2136,2082,2089
+```
