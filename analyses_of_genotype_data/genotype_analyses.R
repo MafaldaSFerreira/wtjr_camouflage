@@ -145,7 +145,20 @@ as.numeric(top_SNPs$LTW_2_36361155)->top_SNPs$LTW_2_36361155
 as.numeric(top_SNPs$LTW_4_5424640)->top_SNPs$LTW_4_5424640
 as.numeric(top_SNPs$LTW_8_79701598)->top_SNPs$LTW_8_79701598
 
+# A) Model with three top associated SNPS + genome-wide PC1 and PC2 
 lm(top_SNPs$Spec1~ + top_SNPs$LTW_4_5424640 + top_SNPs$LTW_8_79701598 + top_SNPs$LTW_2_36361155 + top_SNPs$PC1 + top_SNPs$PC2, data=top_SNPs)->fit
+
+summary(fit)
+summary(fit)$coefficients
+
+# B) Model with three top associated SNPS
+lm(top_SNPs$Spec1~ + top_SNPs$LTW_4_5424640 + top_SNPs$LTW_8_79701598 + top_SNPs$LTW_2_36361155, data=top_SNPs)->fit
+
+summary(fit)
+summary(fit)$coefficients
+
+# C) genome-wide PC1 and PC2 
+lm(top_SNPs$Spec1~ + top_SNPs$PC1 + top_SNPs$PC2, data=top_SNPs)->fit
 
 summary(fit)
 summary(fit)$coefficients
