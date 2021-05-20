@@ -1,0 +1,9 @@
+allele_counts[c("COBrown", "COWhite"), c("Ednrb_white", "Ednrb_brown")]	4.32996415405099e-18
+allele_counts[c("COBrown", "nonCOWhite"), c("Ednrb_white", "Ednrb_brown")]	5.23557914767117e-11
+allele_counts[c("COWhite", "nonCOWhite"), c("Ednrb_white", "Ednrb_brown")]	0.790867383876678
+allele_counts[c("COBrown", "COWhite"), c("Corin_white", "Corin_brown")]	2.85493293377309e-14
+allele_counts[c("COBrown", "nonCOWhite"), c("Corin_white", "Corin_brown")]	2.00589506217678e-05
+allele_counts[c("COWhite", "nonCOWhite"), c("Corin_white", "Corin_brown")]	0.174515753486924
+allele_counts[c("COBrown", "COWhite"), c("Agouti_white", "Agouti_brown"), ]	6.31665279855288e-20
+allele_counts[c("COBrown", "nonCOWhite"), c("Agouti_white", "Agouti_brown")]	2.0334666473381e-06
+allele_counts[c("COWhite", "nonCOWhite"), c("Agouti_white", "Agouti_brown")]	0.0330865815958079

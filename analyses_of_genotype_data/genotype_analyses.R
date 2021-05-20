@@ -1,7 +1,8 @@
 library(genotypeR)
 library(doBy)
 library(reshape2)
-
+library(tidyverse)
+library(janitor)
 
 # Read input file with genotype data for 34 SNPs
 genos<-read.table("genotypes.txt",header=T)
@@ -133,7 +134,7 @@ for(i in 2:35){
 
 write.table(out_struct_corr_012,file="linear_regression_results_all_phenotypes_ADD.txt",col.names = T,row.names = T,sep="\t",quote=F)
 
-### Regression with all the SNPs
+####### Regression with all the SNPs ######
 
 "LTW_2_36361155","LTW_4_5424640","LTW_8_79701598"
 
@@ -146,19 +147,262 @@ as.numeric(top_SNPs$LTW_4_5424640)->top_SNPs$LTW_4_5424640
 as.numeric(top_SNPs$LTW_8_79701598)->top_SNPs$LTW_8_79701598
 
 # A) Model with three top associated SNPS + genome-wide PC1 and PC2 
-lm(top_SNPs$Spec1~ + top_SNPs$LTW_4_5424640 + top_SNPs$LTW_8_79701598 + top_SNPs$LTW_2_36361155 + top_SNPs$PC1 + top_SNPs$PC2, data=top_SNPs)->fit
+lm(top_SNPs$Spec1~ + top_SNPs$LTW_4_5424640 + top_SNPs$LTW_8_79701598 + top_SNPs$LTW_2_36361155 + top_SNPs$PC1 + top_SNPs$PC2, data=top_SNPs)->fitA
 
-summary(fit)
-summary(fit)$coefficients
+summary(fitA)
+summary(fitA)$coefficients
 
 # B) Model with three top associated SNPS
-lm(top_SNPs$Spec1~ + top_SNPs$LTW_4_5424640 + top_SNPs$LTW_8_79701598 + top_SNPs$LTW_2_36361155, data=top_SNPs)->fit
+lm(top_SNPs$Spec1~ + top_SNPs$LTW_4_5424640 + top_SNPs$LTW_8_79701598 + top_SNPs$LTW_2_36361155, data=top_SNPs)->fitB
 
-summary(fit)
-summary(fit)$coefficients
+summary(fitB)
+summary(fitB)$coefficients
 
 # C) genome-wide PC1 and PC2 
-lm(top_SNPs$Spec1~ + top_SNPs$PC1 + top_SNPs$PC2, data=top_SNPs)->fit
+lm(top_SNPs$Spec1~ + top_SNPs$PC1 + top_SNPs$PC2, data=top_SNPs)->fitC
 
-summary(fit)
-summary(fit)$coefficients
+summary(fitC)
+summary(fitC)$coefficients
+
+tableS11<-data.frame(summary(fitA)$coefficients)
+tableS11[7,]<-data.frame(matrix(c(summary(fitA)$adj.r.squared,NA,NA,NA),ncol=4,nrow=1))
+rownames(tableS11)[7]<-c("PVE_A")
+
+tableS11<-rbind(tableS11,data.frame(summary(fitB)$coefficients))
+tableS11[12,]<-data.frame(matrix(c(summary(fitB)$adj.r.squared,NA,NA,NA),ncol=4,nrow=1))
+rownames(tableS11)[12]<-c("PVE_B")
+
+tableS11<-rbind(tableS11,data.frame(summary(fitC)$coefficients))
+tableS11[16,]<-data.frame(matrix(c(summary(fitC)$adj.r.squared,NA,NA,NA),ncol=4,nrow=1))
+rownames(tableS11)[16]<-c("PVE_C")
+
+colnames(tableS11)<-c("Estimate(Beta)","Std.Error","Tvalue","Pvalue")
+
+write.table(tableS11,file="tableS11.txt",col.names=T,row.names=T,sep="\t",quote=F)
+
+####### Genotype and white allele frequencies ######
+
+pheno_state<-read.table("binary_phenotype_state.txt",header=T)
+pheno_state_genotype<-merge(pheno_state,out_cast,by.x="Sample",by.y="SAMPLE_NAME")
+
+pheno_state_genotype<-pheno_state_genotype[,c("Sample","Color","State","LTW_2_36361155","LTW_4_5424640","LTW_8_79701598"),]
+
+# We have 38 brown individuals from Colorado
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="Brown") %>%
+  summary(n=n())
+
+# We have 41 white individuals from Colorado
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="White") %>%
+  summary(n=n())
+
+# And 13 white individuals from outside Colorado
+pheno_state_genotype %>%
+  filter(State!="Colorado") %>%
+  summary(n=n())
+
+# Genotype frequencies in Brown individuals from Colorado:
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="Brown") %>%
+  tabyl(LTW_2_36361155) %>%
+  pivot_wider(id_cols=c(LTW_2_36361155,percent), names_from=LTW_2_36361155,values_from=percent)-> Brown_Corin
+
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="Brown") %>%
+  tabyl(LTW_4_5424640) %>%
+  pivot_wider(id_cols=c(LTW_4_5424640,percent), names_from=LTW_4_5424640,values_from=percent)-> Brown_Agouti
+
+# Add zero from WW genotype
+Brown_Agouti[,"2"]<-0
+
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="Brown") %>%
+  tabyl(LTW_8_79701598) %>%
+  pivot_wider(id_cols=c(LTW_8_79701598,percent), names_from=LTW_8_79701598,values_from=percent)-> Brown_Ednrb
+
+# Genotype frequencies in White individuals from Colorado:
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="White") %>%
+  tabyl(LTW_2_36361155) %>%
+  pivot_wider(id_cols=c(LTW_2_36361155,percent), names_from=LTW_2_36361155,values_from=percent)-> White_Corin
+
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="White") %>%
+  tabyl(LTW_4_5424640) %>% 
+  pivot_wider(id_cols=c(LTW_4_5424640,percent), names_from=LTW_4_5424640,values_from=percent) -> White_Agouti
+
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="White") %>%
+  tabyl(LTW_8_79701598) %>%
+  pivot_wider(id_cols=c(LTW_8_79701598,percent), names_from=LTW_8_79701598,values_from=percent)-> White_Ednrb
+
+# Genotype frequencies in White individuals from outside Colorado:
+pheno_state_genotype %>%
+  filter(State!="Colorado" & Color=="White") %>%
+  count(LTW_2_36361155) %>%
+  pivot_wider(id_cols=c(LTW_2_36361155,percent), names_from=LTW_2_36361155,values_from=percent)-> White_Corin_notCO
+
+pheno_state_genotype %>%
+  filter(State!="Colorado" & Color=="White") %>%
+  tabyl(LTW_4_5424640) %>% 
+  pivot_wider(id_cols=c(LTW_4_5424640,percent), names_from=LTW_4_5424640,values_from=percent)-> White_Agouti_notCO
+
+pheno_state_genotype %>%
+  filter(State!="Colorado" & Color=="White") %>%
+  tabyl(LTW_8_79701598) %>%
+  pivot_wider(id_cols=c(LTW_8_79701598,percent), names_from=LTW_8_79701598,values_from=percent)-> White_Ednrb_notCO
+
+# Genotype frequencies:
+cbind(rbind(Brown_Ednrb,White_Ednrb,White_Ednrb_notCO),rbind(Brown_Corin,White_Corin,White_Corin_notCO),
+      rbind(Brown_Agouti,White_Agouti,White_Agouti_notCO)) -> genotype_frequencies
+
+
+# White allele frequencies
+
+as.numeric(pheno_state_genotype[,4])->pheno_state_genotype[,4]
+as.numeric(pheno_state_genotype[,5])->pheno_state_genotype[,5]
+as.numeric(pheno_state_genotype[,6])->pheno_state_genotype[,6]
+
+pheno_state_genotype %>%
+  filter(State!="Colorado" & Color=="White") %>%
+  summarise_at(vars(LTW_8_79701598,LTW_2_36361155,LTW_4_5424640),~sum(.x)/26)->allele_frequencies
+
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="White") %>%
+  summarise_at(vars(LTW_8_79701598,LTW_2_36361155,LTW_4_5424640),~sum(.x)/82) %>%
+  bind_rows(allele_frequencies) -> allele_frequencies
+
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="Brown") %>%
+  summarise_at(vars(LTW_8_79701598,LTW_2_36361155,LTW_4_5424640),~sum(.x)/76) %>%
+  bind_rows(allele_frequencies) -> allele_frequencies
+
+cbind(allele_frequencies,genotype_frequencies) -> tableS12
+
+write.table(tableS12,file="tableS12.txt",sep="\t",quote=F,row.names = F,col.names=T)
+
+####### Fisher exact tests ######
+
+# Extract counts for Corin
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="Brown") %>%
+  tabyl(LTW_2_36361155)-> Corin
+
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="White") %>%
+  tabyl(LTW_2_36361155) %>%
+  bind_cols(Corin)->Corin
+
+pheno_state_genotype %>%
+  filter(State!="Colorado" & Color=="White") %>%
+  tabyl(LTW_2_36361155) %>%
+  bind_cols(Corin)->Corin
+
+Corin[,c(1,2,5,8)]->Corin
+
+colnames(Corin)<-c("genotypes","noCOWhite","COWhite","COBrown")
+rownames(Corin)<-Corin$genotypes
+Corin$genotypes<-NULL
+
+stats::fisher.test(Corin[,c("noCOWhite","COWhite")])->fs1
+stats::fisher.test(Corin[,c("noCOWhite","COBrown")])->fs2
+stats::fisher.test(Corin[,c("COWhite","COBrown")])->fs3
+
+# Extract counts for Ednrb
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="Brown") %>%
+  tabyl(LTW_8_79701598)-> Ednrb
+
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="White") %>%
+  tabyl(LTW_8_79701598) %>%
+  bind_cols(Ednrb)->Ednrb
+
+pheno_state_genotype %>%
+  filter(State!="Colorado" & Color=="White") %>%
+  tabyl(LTW_8_79701598) %>%
+  bind_cols(Ednrb)->Ednrb
+
+Ednrb[,c(1,2,5,8)]->Ednrb
+
+colnames(Ednrb)<-c("genotypes","noCOWhite","COWhite","COBrown")
+rownames(Ednrb)<-Ednrb$genotypes
+Ednrb$genotypes<-NULL
+
+stats::fisher.test(Ednrb[,c("noCOWhite","COWhite")])->fs4
+stats::fisher.test(Ednrb[,c("noCOWhite","COBrown")])->fs5
+stats::fisher.test(Ednrb[,c("COWhite","COBrown")])->fs6
+
+
+# Extract counts for Agouti
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="White") %>%
+  tabyl(LTW_4_5424640) ->Agouti
+
+pheno_state_genotype %>%
+  filter(State!="Colorado" & Color=="White") %>%
+  tabyl(LTW_4_5424640) %>%
+  bind_cols(Agouti)->Agouti
+
+# This group does not have winter white homozygotes so I need to create an 
+# additional object.
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="Brown") %>%
+  tabyl(LTW_4_5424640) -> tmp
+
+tmp[3,]<-as.data.frame(matrix(c(2,0,0),ncol=3,nrow=1))
+cbind(Agouti,tmp)->Agouti
+
+Agouti[,c(1,2,5,8)]->Agouti
+
+colnames(Agouti)<-c("genotypes","noCOWhite","COWhite","COBrown")
+rownames(Agouti)<-Agouti$genotypes
+Agouti$genotypes<-NULL
+
+stats::fisher.test(Agouti[,c("noCOWhite","COWhite")])->fs7
+stats::fisher.test(Agouti[,c("noCOWhite","COBrown")])->fs8
+stats::fisher.test(Agouti[,c("COWhite","COBrown")])->fs9
+
+data.frame(matrix(c(fs1$data.name,fs2$data.name,fs3$data.name,fs4$data.name,fs5$data.name,fs6$data.name,fs7$data.name,fs8$data.name,fs9$data.name,
+                    fs1$p.value,fs2$p.value,fs3$p.value,fs4$p.value,fs5$p.value,fs6$p.value,fs7$p.value,fs8$p.value,fs9$p.value),ncol=2,nrow=9))-> pvalues_genotypes
+
+# Extract allele counts for Corin
+
+pheno_state_genotype %>%
+  filter(State!="Colorado" & Color=="White") %>%
+  summarise_at(vars(LTW_8_79701598,LTW_2_36361155,LTW_4_5424640),list(~sum(.x),~sum(.x)*-1+26))->allele_counts
+
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="White") %>%
+  summarise_at(vars(LTW_8_79701598,LTW_2_36361155,LTW_4_5424640),list(~sum(.x),~sum(.x)*-1+82)) %>%
+  bind_rows(allele_counts) -> allele_counts
+
+pheno_state_genotype %>%
+  filter(State=="Colorado" & Color=="Brown") %>%
+  summarise_at(vars(LTW_8_79701598,LTW_2_36361155,LTW_4_5424640),list(~sum(.x),~sum(.x)*-1+76)) %>%
+  bind_rows(allele_counts) -> allele_counts
+
+colnames(allele_counts)<-c("Ednrb_white","Corin_white","Agouti_white",
+                           "Ednrb_brown","Corin_brown","Agouti_brown")
+
+rownames(allele_counts)<-c("COBrown","COWhite","nonCOWhite")
+
+stats::fisher.test(allele_counts[c("COBrown","COWhite"),c("Ednrb_white","Ednrb_brown")])->fs10
+stats::fisher.test(allele_counts[c("COBrown","nonCOWhite"),c("Ednrb_white","Ednrb_brown")])->fs11
+stats::fisher.test(allele_counts[c("COWhite","nonCOWhite"),c("Ednrb_white","Ednrb_brown")])->fs12
+
+stats::fisher.test(allele_counts[c("COBrown","COWhite"),c("Corin_white","Corin_brown")])->fs13
+stats::fisher.test(allele_counts[c("COBrown","nonCOWhite"),c("Corin_white","Corin_brown")])->fs14
+stats::fisher.test(allele_counts[c("COWhite","nonCOWhite"),c("Corin_white","Corin_brown")])->fs15
+
+stats::fisher.test(allele_counts[c("COBrown","COWhite"),c("Agouti_white","Agouti_brown"),])->fs16
+stats::fisher.test(allele_counts[c("COBrown","nonCOWhite"),c("Agouti_white","Agouti_brown")])->fs17
+stats::fisher.test(allele_counts[c("COWhite","nonCOWhite"),c("Agouti_white","Agouti_brown")])->fs18
+
+
+data.frame(matrix(c(fs10$data.name,fs11$data.name,fs12$data.name,fs13$data.name,fs14$data.name,fs15$data.name,fs16$data.name,fs17$data.name,fs18$data.name,
+                    fs10$p.value,fs11$p.value,fs12$p.value,fs13$p.value,fs14$p.value,fs15$p.value,fs16$p.value,fs17$p.value,fs18$p.value),ncol=2,nrow=9))-> pvalues_alleles
+
+write.table(pvalues_alleles,"fisher_exact_test_pvalues_allele_counts.txt",sep="\t",quote=F,col.names=F,row.names = F)
+write.table(pvalues_genotypes,"fisher_exact_test_pvalues_genotype_counts.txt",sep="\t",quote=F,col.names=F,row.names = F)
