@@ -213,7 +213,7 @@ pheno_state_genotype %>%
   tabyl(LTW_4_5424640) %>%
   pivot_wider(id_cols=c(LTW_4_5424640,percent), names_from=LTW_4_5424640,values_from=percent)-> Brown_Agouti
 
-# Add zero from WW genotype
+# Add zero for WW genotype
 Brown_Agouti[,"2"]<-0
 
 pheno_state_genotype %>%
@@ -284,90 +284,7 @@ write.table(tableS12,file="tableS12.txt",sep="\t",quote=F,row.names = F,col.name
 
 ####### Fisher exact tests ######
 
-# Extract counts for Corin
-pheno_state_genotype %>%
-  filter(State=="Colorado" & Color=="Brown") %>%
-  tabyl(LTW_2_36361155)-> Corin
-
-pheno_state_genotype %>%
-  filter(State=="Colorado" & Color=="White") %>%
-  tabyl(LTW_2_36361155) %>%
-  bind_cols(Corin)->Corin
-
-pheno_state_genotype %>%
-  filter(State!="Colorado" & Color=="White") %>%
-  tabyl(LTW_2_36361155) %>%
-  bind_cols(Corin)->Corin
-
-Corin[,c(1,2,5,8)]->Corin
-
-colnames(Corin)<-c("genotypes","noCOWhite","COWhite","COBrown")
-rownames(Corin)<-Corin$genotypes
-Corin$genotypes<-NULL
-
-stats::fisher.test(Corin[,c("noCOWhite","COWhite")])->fs1
-stats::fisher.test(Corin[,c("noCOWhite","COBrown")])->fs2
-stats::fisher.test(Corin[,c("COWhite","COBrown")])->fs3
-
-# Extract counts for Ednrb
-pheno_state_genotype %>%
-  filter(State=="Colorado" & Color=="Brown") %>%
-  tabyl(LTW_8_79701598)-> Ednrb
-
-pheno_state_genotype %>%
-  filter(State=="Colorado" & Color=="White") %>%
-  tabyl(LTW_8_79701598) %>%
-  bind_cols(Ednrb)->Ednrb
-
-pheno_state_genotype %>%
-  filter(State!="Colorado" & Color=="White") %>%
-  tabyl(LTW_8_79701598) %>%
-  bind_cols(Ednrb)->Ednrb
-
-Ednrb[,c(1,2,5,8)]->Ednrb
-
-colnames(Ednrb)<-c("genotypes","noCOWhite","COWhite","COBrown")
-rownames(Ednrb)<-Ednrb$genotypes
-Ednrb$genotypes<-NULL
-
-stats::fisher.test(Ednrb[,c("noCOWhite","COWhite")])->fs4
-stats::fisher.test(Ednrb[,c("noCOWhite","COBrown")])->fs5
-stats::fisher.test(Ednrb[,c("COWhite","COBrown")])->fs6
-
-
-# Extract counts for Agouti
-pheno_state_genotype %>%
-  filter(State=="Colorado" & Color=="White") %>%
-  tabyl(LTW_4_5424640) ->Agouti
-
-pheno_state_genotype %>%
-  filter(State!="Colorado" & Color=="White") %>%
-  tabyl(LTW_4_5424640) %>%
-  bind_cols(Agouti)->Agouti
-
-# This group does not have winter white homozygotes so I need to create an 
-# additional object.
-pheno_state_genotype %>%
-  filter(State=="Colorado" & Color=="Brown") %>%
-  tabyl(LTW_4_5424640) -> tmp
-
-tmp[3,]<-as.data.frame(matrix(c(2,0,0),ncol=3,nrow=1))
-cbind(Agouti,tmp)->Agouti
-
-Agouti[,c(1,2,5,8)]->Agouti
-
-colnames(Agouti)<-c("genotypes","noCOWhite","COWhite","COBrown")
-rownames(Agouti)<-Agouti$genotypes
-Agouti$genotypes<-NULL
-
-stats::fisher.test(Agouti[,c("noCOWhite","COWhite")])->fs7
-stats::fisher.test(Agouti[,c("noCOWhite","COBrown")])->fs8
-stats::fisher.test(Agouti[,c("COWhite","COBrown")])->fs9
-
-data.frame(matrix(c(fs1$data.name,fs2$data.name,fs3$data.name,fs4$data.name,fs5$data.name,fs6$data.name,fs7$data.name,fs8$data.name,fs9$data.name,
-                    fs1$p.value,fs2$p.value,fs3$p.value,fs4$p.value,fs5$p.value,fs6$p.value,fs7$p.value,fs8$p.value,fs9$p.value),ncol=2,nrow=9))-> pvalues_genotypes
-
-# Extract allele counts for Corin
+# Extract allele counts
 
 pheno_state_genotype %>%
   filter(State!="Colorado" & Color=="White") %>%
@@ -405,4 +322,3 @@ data.frame(matrix(c(fs10$data.name,fs11$data.name,fs12$data.name,fs13$data.name,
                     fs10$p.value,fs11$p.value,fs12$p.value,fs13$p.value,fs14$p.value,fs15$p.value,fs16$p.value,fs17$p.value,fs18$p.value),ncol=2,nrow=9))-> pvalues_alleles
 
 write.table(pvalues_alleles,"fisher_exact_test_pvalues_allele_counts.txt",sep="\t",quote=F,col.names=F,row.names = F)
-write.table(pvalues_genotypes,"fisher_exact_test_pvalues_genotype_counts.txt",sep="\t",quote=F,col.names=F,row.names = F)
