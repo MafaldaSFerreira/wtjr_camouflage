@@ -94,21 +94,24 @@ samtools faidx DMNS18807_06042020_pseudohap2.2.noNs.fasta 321838 >> pseudohap2.2
 
 I removed these sequences.
 
-#### Duplicates.
+#### Duplicates
 
 I kept one sequence per duplicate.
 
-#### Filtering:
+#### Filtering
 
-Create files with the scaffolds to remove:
+I created files with the scaffolds to remove.
 
+```
 filterbyname.sh -Xmx20g in=fasta/DMNS18807_06042020_pseudohap2_1_noNs.fa out=DMNS18807_06042020_pseudohap2_1.noNs.nomtDNA.noDups.fasta names=filter_p2.1_lcl.txt
 filterbyname.sh -Xmx20g in=fasta/DMNS18807_06042020_pseudohap2_2_noNs.fa out=DMNS18807_06042020_pseudohap2_2.noNs.nomtDNA.noDups.fasta names=filter_p2.2_lcl.txt
+```
 
-#### Adaptors:
+#### Adaptors
 
 The recommendation is to split these scaffolds in two, but some of them are quite long. Also, looking at the D-Genies output, none of the alignments to Oryctolagus chromosomes breaks on any of the coordinates labeled as adaptors, which gives me some confidence that the scaffolds were not misassembled. Either way, I would like to keep the scaffolds as close to what was used in the paper as possible. My decision was then to mask these coordinates.
 
+```
 Sequence name, length, span(s), apparent source
 227	113291978	2762876..2762915,33348480..33348519	adaptor:multiple
 241886	18998	1..16148	mitochondrion-not_cleaned
@@ -121,7 +124,9 @@ Sequence name, length, span(s), apparent source
 574	5648746	5102940..5102970	adaptor:NGB01088.1-not_cleaned
 683	63731038	17893472..17893509	adaptor:NGB01093.1-not_cleaned
 84	26604866	4197141..4197193	adaptor:NGB01096.1-not_cleaned
+```
 
+```
 Sequence name, length, span(s), apparent source
 227	113287062	2760996..2761035,33364340..33364379	adaptor:multiple
 241886	18998	1..16148	mitochondrion-not_cleaned
@@ -134,16 +139,22 @@ Sequence name, length, span(s), apparent source
 574	5653791	5106340..5106370	adaptor:NGB01088.1-not_cleaned
 683	63657215	17871249..17871286	adaptor:NGB01093.1-not_cleaned
 84	26576653	4194845..4194897	adaptor:NGB01096.1-not_cleaned
+```
 
-
+```
 bedtools maskfasta -fi DMNS18807_06042020_pseudohap2_1.noNs.nomtDNA.noDups.fasta -fo DMNS18807_06042020_pseudohap2_1.noNs.nomtDNA.noDups.masked.fasta -bed p_2_1_mask.bed
 
 bedtools maskfasta -fi DMNS18807_06042020_pseudohap2_2.noNs.nomtDNA.noDups.fasta -fo DMNS18807_06042020_pseudohap2_2.noNs.nomtDNA.noDups.masked.fasta -bed p_2_2_mask.bed
+```
 
-Unfortunately, I need to rename the files to have the original name I used in submission. 
+Renamed the genome fastas to the original name I used in the submission. 
 
+```
 mv DMNS18807_06042020_pseudohap2.1.noNs.fasta DMNS18807_06042020_pseudohap2.1.noNs.original.fasta
 mv DMNS18807_06042020_pseudohap2.2.noNs.fasta DMNS18807_06042020_pseudohap2.2.noNs.original.fasta
 
 mv DMNS18807_06042020_pseudohap2_1.noNs.nomtDNA.noDups.masked.fasta DMNS18807_06042020_pseudohap2.1.noNs.fasta
 mv DMNS18807_06042020_pseudohap2_2.noNs.nomtDNA.noDups.masked.fasta DMNS18807_06042020_pseudohap2.2.noNs.fasta
+```
+
+I submitted DMNS18807_06042020_pseudohap2.1.noNs.fasta and DMNS18807_06042020_pseudohap2.2.noNs.fasta
