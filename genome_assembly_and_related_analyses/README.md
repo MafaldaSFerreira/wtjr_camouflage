@@ -69,7 +69,7 @@ filterbyname.sh in=../DMNS18807_06042020_pseudohap2.1.fasta out=DMNS18807_060420
 filterbyname.sh in=../DMNS18807_06042020_pseudohap2.2.fasta out=DMNS18807_06042020_pseudohap2.2.noNs.fasta names=2156,2069,2125,2209,2155,1989,1994,2123,1987,2208,2092,1986,2119,2083,2074,2091,2205,1990,2115,2154,2072,2081,2118,2106,1991,2124,2164,320539,2114,2107,2097,1985,2116,2153,359326,2122,1995,321491,2071,366560,1992,2076,1997,1993,2084,1988,2085,2105,2136,2082,2089
 ```
 
-After this, I submitted the genomes to NCBI again, who was able to trim a few more scaffolds, but not all. I used the "ForeignContaminationModified" genome .fsa files to filter more scaffolds based on the ncbi reports (pseudohap2.1_submit.ncbi.nlm.nih.gov.txt and pseudohap2.2_submit.ncbi.nlm.nih.gov.txt).
+After this, I submitted the genomes to NCBI again. NCBI trimmed a few more scaffolds that were too short/contamination, but not all. I used the "ForeignContaminationModified" genome .fsa files to filter more scaffolds based on the ncbi reports (pseudohap2.1_submit.ncbi.nlm.nih.gov.txt and pseudohap2.2_submit.ncbi.nlm.nih.gov.txt).
 
 #### Mitochondria
 
@@ -109,7 +109,7 @@ filterbyname.sh -Xmx20g in=fasta/DMNS18807_06042020_pseudohap2_2_noNs.fa out=DMN
 
 #### Adaptors
 
-The recommendation is to split these scaffolds in two, but some of them are quite long. Also, looking at the D-Genies output, none of the alignments to Oryctolagus chromosomes breaks on any of the coordinates labeled as adaptors, which gives me some confidence that the scaffolds were not misassembled. Either way, I would like to keep the scaffolds as close to what was used in the paper as possible. My decision was then to mask these coordinates.
+The recommendation is to split these scaffolds in two, but some of them are quite long. Also, looking at the D-Genies output, none of the alignments to Oryctolagus chromosomes breaks on any of the coordinates labeled as adaptors, which gives me some confidence that the scaffolds were not misassembled because of adaptor contamination. Splitting the scaffolds would require changing their names relatively to what was used during the actual analysis. To avoid confusion, my decision was then to mask these coordinates.
 
 ```
 Sequence name, length, span(s), apparent source
