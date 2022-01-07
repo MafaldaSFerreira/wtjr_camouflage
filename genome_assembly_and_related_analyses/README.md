@@ -68,3 +68,82 @@ filterbyname.sh in=../DMNS18807_06042020_pseudohap2.1.fasta out=DMNS18807_060420
 
 filterbyname.sh in=../DMNS18807_06042020_pseudohap2.2.fasta out=DMNS18807_06042020_pseudohap2.2.noNs.fasta names=2156,2069,2125,2209,2155,1989,1994,2123,1987,2208,2092,1986,2119,2083,2074,2091,2205,1990,2115,2154,2072,2081,2118,2106,1991,2124,2164,320539,2114,2107,2097,1985,2116,2153,359326,2122,1995,321491,2071,366560,1992,2076,1997,1993,2084,1988,2085,2105,2136,2082,2089
 ```
+
+After this, I submitted the genomes to NCBI again, who was able to trim a few more scaffolds, but not all. I used the "ForeignContaminationModified" genome .fsa files to filter more scaffolds based on the ncbi reports (pseudohap2.1_submit.ncbi.nlm.nih.gov.txt and pseudohap2.2_submit.ncbi.nlm.nih.gov.txt).
+
+#### Mitochondria
+
+I put all the putative sequences in a new file and used NCBI blast to confirm these were indeed mtDNA. All of these blasted to other Lepus mtDNA. Results in XF2HP8CT013-Alignment.txt.zip XF0NJ2VH013-Alignment.txt.zip
+
+```
+samtools faidx DMNS18807_06042020_pseudohap2.1.noNs.fasta 230727 > pseudohap2.1_putative_mtDNA.fasta
+samtools faidx DMNS18807_06042020_pseudohap2.1.noNs.fasta 237548 >> pseudohap2.1_putative_mtDNA.fasta
+samtools faidx DMNS18807_06042020_pseudohap2.1.noNs.fasta 271992 >> pseudohap2.1_putative_mtDNA.fasta
+samtools faidx DMNS18807_06042020_pseudohap2.1.noNs.fasta 321837 >> pseudohap2.1_putative_mtDNA.fasta
+samtools faidx DMNS18807_06042020_pseudohap2.1.noNs.fasta 321838 >> pseudohap2.1_putative_mtDNA.fasta
+samtools faidx DMNS18807_06042020_pseudohap2.1.noNs.fasta 970 >> pseudohap2.1_putative_mtDNA.fasta
+```
+
+```
+samtools faidx DMNS18807_06042020_pseudohap2.2.noNs.fasta 230727 > pseudohap2.2_putative_mtDNA.fasta
+samtools faidx DMNS18807_06042020_pseudohap2.2.noNs.fasta 237548 >> pseudohap2.2_putative_mtDNA.fasta
+samtools faidx DMNS18807_06042020_pseudohap2.2.noNs.fasta 271992 >> pseudohap2.2_putative_mtDNA.fasta
+samtools faidx DMNS18807_06042020_pseudohap2.2.noNs.fasta 321837 >> pseudohap2.2_putative_mtDNA.fasta
+samtools faidx DMNS18807_06042020_pseudohap2.2.noNs.fasta 321838 >> pseudohap2.2_putative_mtDNA.fasta
+```
+
+I removed these sequences.
+
+#### Duplicates.
+
+I kept one sequence per duplicate.
+
+#### Filtering:
+
+Create files with the scaffolds to remove:
+
+filterbyname.sh -Xmx20g in=fasta/DMNS18807_06042020_pseudohap2_1_noNs.fa out=DMNS18807_06042020_pseudohap2_1.noNs.nomtDNA.noDups.fasta names=filter_p2.1_lcl.txt
+filterbyname.sh -Xmx20g in=fasta/DMNS18807_06042020_pseudohap2_2_noNs.fa out=DMNS18807_06042020_pseudohap2_2.noNs.nomtDNA.noDups.fasta names=filter_p2.2_lcl.txt
+
+#### Adaptors:
+
+The recommendation is to split these scaffolds in two, but some of them are quite long. Also, looking at the D-Genies output, none of the alignments to Oryctolagus chromosomes breaks on any of the coordinates labeled as adaptors, which gives me some confidence that the scaffolds were not misassembled. Either way, I would like to keep the scaffolds as close to what was used in the paper as possible. My decision was then to mask these coordinates.
+
+Sequence name, length, span(s), apparent source
+227	113291978	2762876..2762915,33348480..33348519	adaptor:multiple
+241886	18998	1..16148	mitochondrion-not_cleaned
+295	102702642	102113456..102113476	adaptor:NGB01088.1-not_cleaned
+310509	7130	5732..5772	adaptor:NGB00749.1-not_cleaned
+317375	7134	5736..5776	adaptor:NGB00749.1-not_cleaned
+373	46990746	9685310..9685338	adaptor:NGB01088.1-not_cleaned
+375	59613073	17653677..17653710	adaptor:NGB01088.1-not_cleaned
+488	49961744	25258059..25258087	adaptor:NGB01096.1-not_cleaned
+574	5648746	5102940..5102970	adaptor:NGB01088.1-not_cleaned
+683	63731038	17893472..17893509	adaptor:NGB01093.1-not_cleaned
+84	26604866	4197141..4197193	adaptor:NGB01096.1-not_cleaned
+
+Sequence name, length, span(s), apparent source
+227	113287062	2760996..2761035,33364340..33364379	adaptor:multiple
+241886	18998	1..16148	mitochondrion-not_cleaned
+295	94574294	93985801..93985821	adaptor:NGB01088.1-not_cleaned
+310509	7130	5732..5772	adaptor:NGB00749.1-not_cleaned
+317375	7134	5736..5776	adaptor:NGB00749.1-not_cleaned
+373	46989064	9661041..9661069	adaptor:NGB01088.1-not_cleaned
+375	59580242	17692317..17692350	adaptor:NGB01088.1-not_cleaned
+488	49961815	25270409..25270437	adaptor:NGB01096.1-not_cleaned
+574	5653791	5106340..5106370	adaptor:NGB01088.1-not_cleaned
+683	63657215	17871249..17871286	adaptor:NGB01093.1-not_cleaned
+84	26576653	4194845..4194897	adaptor:NGB01096.1-not_cleaned
+
+
+bedtools maskfasta -fi DMNS18807_06042020_pseudohap2_1.noNs.nomtDNA.noDups.fasta -fo DMNS18807_06042020_pseudohap2_1.noNs.nomtDNA.noDups.masked.fasta -bed p_2_1_mask.bed
+
+bedtools maskfasta -fi DMNS18807_06042020_pseudohap2_2.noNs.nomtDNA.noDups.fasta -fo DMNS18807_06042020_pseudohap2_2.noNs.nomtDNA.noDups.masked.fasta -bed p_2_2_mask.bed
+
+Unfortunately, I need to rename the files to have the original name I used in submission. 
+
+mv DMNS18807_06042020_pseudohap2.1.noNs.fasta DMNS18807_06042020_pseudohap2.1.noNs.original.fasta
+mv DMNS18807_06042020_pseudohap2.2.noNs.fasta DMNS18807_06042020_pseudohap2.2.noNs.original.fasta
+
+mv DMNS18807_06042020_pseudohap2_1.noNs.nomtDNA.noDups.masked.fasta DMNS18807_06042020_pseudohap2.1.noNs.fasta
+mv DMNS18807_06042020_pseudohap2_2.noNs.nomtDNA.noDups.masked.fasta DMNS18807_06042020_pseudohap2.2.noNs.fasta
