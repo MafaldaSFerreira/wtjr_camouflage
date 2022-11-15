@@ -158,3 +158,35 @@ mv DMNS18807_06042020_pseudohap2_2.noNs.nomtDNA.noDups.masked.fasta DMNS18807_06
 ```
 
 I submitted DMNS18807_06042020_pseudohap2.1.noNs.fasta and DMNS18807_06042020_pseudohap2.2.noNs.fasta
+
+### Filtering again:
+
+NCBI flagged additional contigs, so let's remove them. The reports are the following files `2nd_error_report_pseudohap2.1.submit.ncbi.nlm.nih.gov.txt` and `2nd_error_report_pseudohap2.2.submit.ncbi.nlm.nih.gov.txt`
+
+
+```
+filterbyname.sh -Xmx20g in=DMNS18807_06042020_pseudohap2.1.noNs.fasta out=DMNS18807_06042020_pseudohap2.1.noNs.2ndRound.fasta names=filter_p2.1_lcl_v2.txt
+filterbyname.sh -Xmx20g in=DMNS18807_06042020_pseudohap2.2.noNs.fasta out=DMNS18807_06042020_pseudohap2.2.noNs.2ndRound.fasta names=filter_p2.2_lcl_v2.txt
+```
+
+Renamed the genome fastas to the original name I used in the submission. 
+
+```
+mv DMNS18807_06042020_pseudohap2.1.noNs.fasta DMNS18807_06042020_pseudohap2.1.noNs.1stSubmission.fasta
+mv DMNS18807_06042020_pseudohap2.2.noNs.fasta DMNS18807_06042020_pseudohap2.2.noNs.1stSubmission.fasta
+
+mv DMNS18807_06042020_pseudohap2.1.noNs.2ndRound.fasta DMNS18807_06042020_pseudohap2.1.noNs.fasta
+mv DMNS18807_06042020_pseudohap2.2.noNs.2ndRound.fasta DMNS18807_06042020_pseudohap2.2.noNs.fasta
+```
+
+Submission inside screen "submissions"
+
+```
+sftp subftp@sftp-private.ncbi.nlm.nih.gov
+w4pYB9VQ
+cd uploads/amafaldasferreira_gmail.com_pqCTDBGy
+mkdir genomes
+cd genomes
+put DMNS18807_06042020_pseudohap2.1.noNs.fasta
+put DMNS18807_06042020_pseudohap2.2.noNs.fasta
+```
