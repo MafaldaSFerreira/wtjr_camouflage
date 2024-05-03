@@ -1,6 +1,10 @@
 # The evolution of winter camouflage in white-tailed jackrabbits
 
-This github contains custom code that was used to study the evolution of seasonal camouflage in white-tailed jackrabbits. Along with the custom code, I provide context code for upstream and downstream analyses so that the code can be efficiently and effectively used.
+This github contains custom code that was used to study the evolution of seasonal camouflage in white-tailed jackrabbits and supported analysis for the following publication:
+
+Mafalda S. Ferreira et al. _The evolution of white-tailed jackrabbit camouflage in response to past and future seasonal climates._ Science __379__, 1238-1242 (2023). [DOI:10.1126/science.ade3984](https://www.science.org/doi/full/10.1126/science.ade3984)
+
+Along with the custom code, I provide context code for upstream and downstream analyses so that the code can be efficiently and effectively used.
 
 **Contact**: sferreira.mafalda (at) gmail.com
 
